@@ -11,7 +11,7 @@ A HID device simulation implemented purely in Java!
 
 
 
-Starting from Android 6.0.1, the hidcommand_jni library is built into the system. We can load this library and use the JNI functions provided in it. However, please note that the input parameters of the JNI functions in this library have changed since Android 8.1.0. Therefore, the Java code in this project corresponds to the JNI functions after Android 8.1.0, and this project can only be used on Android 8.1.0 and above. If you want to use the hidcommand_jni library between Android 6.0.1 and Android 8.0.0, please modify the input parameters of the JNI functions in this project according to the AOSP at http://www.aospxref.com/android-6.0.1_r9/xref/frameworks/base/cmds/hid/src/com/android/commands/hid/Device.java .
+Starting from Android 6.0.1, the hidcommand_jni library is built into the system. We can load this library and use the JNI functions provided in it. However, please note that the input parameters of the JNI functions in this library have changed since Android 8.1.0. Therefore, the Java code in this project corresponds to the JNI functions after Android 8.1.0, and this project can only be used on Android 8.1.0 and above. If you want to use the hidcommand_jni library between Android 6.0.1 and Android 8.0.0, please modify the input parameters of the JNI functions in this project according to the Android source code at http://www.aospxref.com/android-6.0.1_r9/xref/frameworks/base/cmds/hid/src/com/android/commands/hid/Device.java .
 
 # How to build this project
 使用Android Studio编译此项目，您会得到一个apk文件。解压apk文件中的classes.dex并将其放置在Android设备中的任意位置，比如/sdcard/classes.dex。随后使用以下命令运行此dex文件：
