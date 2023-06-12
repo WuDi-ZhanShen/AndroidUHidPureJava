@@ -1,4 +1,4 @@
-[# AndroidUHidPureJava
+# AndroidUHidPureJava
 
 A HID device simulation implemented purely in Java!
 
