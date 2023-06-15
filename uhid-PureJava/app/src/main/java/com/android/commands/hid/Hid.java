@@ -213,7 +213,7 @@ public class Hid {
 
 
         System.out.println("");
-        System.out.println("Create uhid mouse and uhid keyboard successfully.");
+        System.out.println("Create uhid mouse, keyboard, gamePad, touchScreen successfully.");
         System.out.println("Enter \"m\" to send random mouse move;");
         System.out.println("Enter \"k\" to send random keyboard keyPress or keyRelease;");
         System.out.println("Enter \"g\" to send random gamePad axis moves or axis reset;");
