@@ -1,10 +1,28 @@
+/*
+ * Copyright (C) 2015 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.android.commands.hid;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
+import android.os.MessageQueue;
 import android.os.SystemClock;
 import android.util.Log;
 import android.util.SparseArray;
@@ -45,6 +63,12 @@ public class Device {
     static {
         System.loadLibrary("hidcommand_jni");
     }
+
+    private static native long nativeOpenDevice(String name, int id, int vid, int pid,
+                                                byte[] descriptor, MessageQueue queue, DeviceCallback callback);
+
+    private static native long nativeOpenDevice(String name, int id, int vid, int pid,
+                                                byte[] descriptor, DeviceCallback callback);
 
     private static native long nativeOpenDevice(String name, int id, int vid, int pid, int bus,
                                                 byte[] descriptor, DeviceCallback callback);
@@ -115,8 +139,16 @@ public class Device {
             switch (msg.what) {
                 case MSG_OPEN_DEVICE:
                     Bundle args = (Bundle) msg.obj;
-                    mPtr = nativeOpenDevice(args.getString("name"), args.getInt("id"), args.getInt("vid"), args.getInt("pid"),
-                            args.getInt("bus"), args.getByteArray("descriptor"), new DeviceCallback());
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        mPtr = nativeOpenDevice(args.getString("name"), args.getInt("id"), args.getInt("vid"), args.getInt("pid"),
+                                args.getInt("bus"), args.getByteArray("descriptor"), new DeviceCallback());
+                    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+                        mPtr = nativeOpenDevice(args.getString("name"), args.getInt("id"), args.getInt("vid"), args.getInt("pid"),
+                                args.getByteArray("descriptor"), new DeviceCallback());
+                    } else {
+                        mPtr = nativeOpenDevice(args.getString("name"), args.getInt("id"), args.getInt("vid"), args.getInt("pid"),
+                                args.getByteArray("descriptor"), getLooper().myQueue(), new DeviceCallback());
+                    }
                     pauseEvents();
                     break;
                 case MSG_SEND_REPORT:
@@ -127,7 +159,7 @@ public class Device {
                     }
                     break;
                 case MSG_SEND_GET_FEATURE_REPORT_REPLY:
-                    if (mPtr != 0&& mBarrierToken) {
+                    if (mPtr != 0 && mBarrierToken) {
                         nativeSendGetFeatureReportReply(mPtr, msg.arg1, (byte[]) msg.obj);
                     } else {
                         Log.e(TAG, "Tried to send feature report reply to closed device.");
