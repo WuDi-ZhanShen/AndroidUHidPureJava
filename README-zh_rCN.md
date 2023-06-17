@@ -1,10 +1,10 @@
 # AndroidUHidPureJava
-´¿JavaÊµÏÖµÄuhidÄ£ÄâHIDÉè±¸£¡
+çº¯Javaå®ç°çš„uhidæ¨¡æ‹ŸHIDè®¾å¤‡ï¼
 
 # How it works
-°²×¿6.0.1Æğ£¬ÏµÍ³ÄÚÖÃÁËhidcommand_jni¿â¡£¼ÓÔØÕâ¸ö¿â²¢Ê¹ÓÃ¿âÖĞµÄJNIº¯Êı¼´¿É¡£µ«Çë×¢Òâ£¬Õâ¸ö¿âÖĞµÄJNIº¯ÊıµÄ½ÓÊÕ²ÎÊıÔÚ°²×¿8.1.0Ö®ºóÓĞ±ä»¯£¬¶ø±¾ÏîÄ¿ÖĞµÄJava´úÂë¶ÔÓ¦ÓÚ°²×¿8.1.0ºóµÄJNIº¯Êı¡£Òò´Ë£¬±¾ÏîÄ¿½öÄÜÔÚ°²×¿8.1.0¼°ÒÔÉÏÊ¹ÓÃ¡£Èç¹ûÄúÏëÔÚ°²×¿6.0.1ºÍ°²×¿8.0.0Ö®¼äÊ¹ÓÃhidcommand_jni¿â£¬Çë°´AOSPÖĞµÄ http://www.aospxref.com/android-6.0.1_r9/xref/frameworks/base/cmds/hid/src/com/android/commands/hid/Device.java ĞŞ¸Ä±¾ÏîÄ¿ÖĞµÄJNIº¯ÊıµÄ½ÓÊÕ²ÎÊı¡£
+å®‰å“6.0.1èµ·ï¼Œç³»ç»Ÿå†…ç½®äº†hidcommand_jniåº“ã€‚åŠ è½½è¿™ä¸ªåº“å¹¶ä½¿ç”¨åº“ä¸­çš„JNIå‡½æ•°å³å¯ã€‚\
 
 # How to build this project and how to use
-Ê¹ÓÃAndroid Studio±àÒë´ËÏîÄ¿£¬Äú»áµÃµ½Ò»¸öapkÎÄ¼ş¡£½âÑ¹apkÎÄ¼şÖĞµÄclasses.dex²¢½«Æä·ÅÖÃÔÚAndroidÉè±¸ÖĞµÄÈÎÒâÎ»ÖÃ£¬±ÈÈç/sdcard/classes.dex¡£ËæºóÊ¹ÓÃÒÔÏÂÃüÁîÔËĞĞ´ËdexÎÄ¼ş£º
+ä½¿ç”¨Android Studioç¼–è¯‘æ­¤é¡¹ç›®ï¼Œæ‚¨ä¼šå¾—åˆ°ä¸€ä¸ªapkæ–‡ä»¶ã€‚è§£å‹apkæ–‡ä»¶ä¸­çš„classes.dexå¹¶å°†å…¶æ”¾ç½®åœ¨Androidè®¾å¤‡ä¸­çš„ä»»æ„ä½ç½®ï¼Œæ¯”å¦‚/sdcard/classes.dexã€‚éšåä½¿ç”¨ä»¥ä¸‹å‘½ä»¤è¿è¡Œæ­¤dexæ–‡ä»¶ï¼š
 
 export CLASSPATH=/sdcard/classes.dex;app_process / com.android.commands.hid.Hid
