@@ -63,14 +63,18 @@ public class Device {
     static {
         System.loadLibrary("hidcommand_jni");
     }
-
+    //since Android 6.0.1
     private static native long nativeOpenDevice(String name, int id, int vid, int pid,
                                                 byte[] descriptor, MessageQueue queue, DeviceCallback callback);
-
+    //since Android 8.1,API 27
     private static native long nativeOpenDevice(String name, int id, int vid, int pid,
                                                 byte[] descriptor, DeviceCallback callback);
-
+    //since Android 11,API 30
     private static native long nativeOpenDevice(String name, int id, int vid, int pid, int bus,
+                                                byte[] descriptor, DeviceCallback callback);
+
+    //since Android 15,API 35
+    private static native long nativeOpenDevice(String name, String uniq, int id, int vid, int pid, int bus,
                                                 byte[] descriptor, DeviceCallback callback);
 
     private static native void nativeSendReport(long ptr, byte[] data);
@@ -79,7 +83,7 @@ public class Device {
 
     private static native void nativeCloseDevice(long ptr);
 
-    public Device(int id, String name, int vid, int pid, int bus, byte[] descriptor,
+    public Device(int id, String name,String uniq, int vid, int pid, int bus, byte[] descriptor,
                   byte[] report, SparseArray<byte[]> featureReports, Map<ByteBuffer, byte[]> outputs) {
         mId = id;
         mThread = new HandlerThread("HidDeviceHandler");
@@ -98,6 +102,7 @@ public class Device {
         } else {
             args.putString("name", id + ":" + vid + ":" + pid);
         }
+        args.putString("uniq", uniq);
         args.putByteArray("descriptor", descriptor);
         args.putByteArray("report", report);
         mHandler.obtainMessage(MSG_OPEN_DEVICE, args).sendToTarget();
@@ -139,7 +144,10 @@ public class Device {
             switch (msg.what) {
                 case MSG_OPEN_DEVICE:
                     Bundle args = (Bundle) msg.obj;
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+                        mPtr = nativeOpenDevice(args.getString("name"),args.getString("uniq"), args.getInt("id"), args.getInt("vid"), args.getInt("pid"),
+                                args.getInt("bus"), args.getByteArray("descriptor"), new DeviceCallback());
+                    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                         mPtr = nativeOpenDevice(args.getString("name"), args.getInt("id"), args.getInt("vid"), args.getInt("pid"),
                                 args.getInt("bus"), args.getByteArray("descriptor"), new DeviceCallback());
                     } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {

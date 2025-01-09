@@ -206,10 +206,10 @@ public class Hid {
         // We create four uHid devices.
         // The id, name, vid, pid, and bus parameters do not matter. Only the descriptor parameter matters.
 
-        Device mouse = new Device(1, "uHidMouse", 1234, 5678, 0x03, hidMouseDescriptor, mouseCode, null, null);
-        Device keyboard = new Device(2, "uHidKeyboard", 8765, 4321, 0x03, hidKeyboardDescriptor, keyboardCode, null, null);
-        Device gamePad = new Device(3, "uHidGamePad", 2345, 6789, 0x03, hidGamePadDescriptor, gamePadCode, null, null);
-        Device touchScreen = new Device(4, "uHidTouchScreen", 6789, 2345, 0x03, hidTouchScreenDescriptor, touchScreenCode, null, null);
+        Device mouse = new Device(1, "uHidMouse", "",1234, 5678, 0x03, hidMouseDescriptor, mouseCode, null, null);
+        Device keyboard = new Device(2, "uHidKeyboard","", 8765, 4321, 0x03, hidKeyboardDescriptor, keyboardCode, null, null);
+        Device gamePad = new Device(3, "uHidGamePad", "",2345, 6789, 0x03, hidGamePadDescriptor, gamePadCode, null, null);
+        Device touchScreen = new Device(4, "uHidTouchScreen", "",6789, 2345, 0x03, hidTouchScreenDescriptor, touchScreenCode, null, null);
 
 
         System.out.println("");
