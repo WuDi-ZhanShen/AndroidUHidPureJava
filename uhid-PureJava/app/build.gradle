@@ -4,12 +4,12 @@ plugins {
 
 android {
     namespace 'uhid.purejava'
-    compileSdk 33
+    compileSdk 35
 
     defaultConfig {
         applicationId "uhid.purejava"
         minSdk 23
-        targetSdk 33
+        targetSdk 35
         versionCode 1
         versionName "1.0"
         multiDexEnabled false
