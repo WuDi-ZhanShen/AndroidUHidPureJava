@@ -12,7 +12,7 @@ Once you open the app, it will automaticly unzip the classes.dex from its apk fi
 
 export CLASSPATH=/sdcard/Android/data/uhid/purejava/files/classes.dex;app_process / com.android.commands.hid.Hid
 
-Adb or Root permission is required.
+Note: Adb or Root permission is required.
 
 Note: you can also manually unzip classes.dex from apk file. Just remember to change the filePath parameter in the launch command.
 
