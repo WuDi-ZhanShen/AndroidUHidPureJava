@@ -43,7 +43,8 @@ public class Device {
     private static final int MSG_OPEN_DEVICE = 1;
     private static final int MSG_SEND_REPORT = 2;
     private static final int MSG_SEND_GET_FEATURE_REPORT_REPLY = 3;
-    private static final int MSG_CLOSE_DEVICE = 4;
+    private static final int MSG_SEND_SET_REPORT_REPLY = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU ? 4 : -1;
+    private static final int MSG_CLOSE_DEVICE = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU ? 5 : 4;
 
     // Sync with linux uhid_event_type::UHID_OUTPUT
     private static final byte UHID_EVENT_TYPE_UHID_OUTPUT = 6;
@@ -59,6 +60,8 @@ public class Device {
     private long mTimeToSend;
 
     private final Object mCond = new Object();
+
+    private int mResponseId;
 
     static {
         System.loadLibrary("hidcommand_jni");
@@ -80,6 +83,9 @@ public class Device {
     private static native void nativeSendReport(long ptr, byte[] data);
 
     private static native void nativeSendGetFeatureReportReply(long ptr, int id, byte[] data);
+
+    //since Android 14,API 34
+    private static native void nativeSendSetReportReply(long ptr, int id, boolean success);
 
     private static native void nativeCloseDevice(long ptr);
 
@@ -115,6 +121,17 @@ public class Device {
         mHandler.sendMessageAtTime(msg, mTimeToSend);
     }
 
+    public void setGetReportResponse(byte[] report) {
+        mFeatureReports.put(report[0], report);
+    }
+
+    public void sendSetReportReply(boolean success) {
+        Message msg =
+                mHandler.obtainMessage(MSG_SEND_SET_REPORT_REPLY, mResponseId, success ? 1 : 0);
+
+        mHandler.sendMessageAtTime(msg, mTimeToSend);
+    }
+
     public void addDelay(int delay) {
         mTimeToSend = Math.max(SystemClock.uptimeMillis(), mTimeToSend) + delay;
     }
@@ -141,52 +158,54 @@ public class Device {
         @Override
         public void handleMessage(Message msg) {
 
-            switch (msg.what) {
-                case MSG_OPEN_DEVICE:
-                    Bundle args = (Bundle) msg.obj;
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-                        mPtr = nativeOpenDevice(args.getString("name"),args.getString("uniq"), args.getInt("id"), args.getInt("vid"), args.getInt("pid"),
-                                args.getInt("bus"), args.getByteArray("descriptor"), new DeviceCallback());
-                    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                        mPtr = nativeOpenDevice(args.getString("name"), args.getInt("id"), args.getInt("vid"), args.getInt("pid"),
-                                args.getInt("bus"), args.getByteArray("descriptor"), new DeviceCallback());
-                    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-                        mPtr = nativeOpenDevice(args.getString("name"), args.getInt("id"), args.getInt("vid"), args.getInt("pid"),
-                                args.getByteArray("descriptor"), new DeviceCallback());
-                    } else {
-                        mPtr = nativeOpenDevice(args.getString("name"), args.getInt("id"), args.getInt("vid"), args.getInt("pid"),
-                                args.getByteArray("descriptor"), getLooper().myQueue(), new DeviceCallback());
-                    }
-                    pauseEvents();
-                    break;
-                case MSG_SEND_REPORT:
-                    if (mPtr != 0 && mBarrierToken) {
-                        nativeSendReport(mPtr, (byte[]) msg.obj);
-                    } else {
-                        Log.e(TAG, "Tried to send report to closed device.");
-                    }
-                    break;
-                case MSG_SEND_GET_FEATURE_REPORT_REPLY:
-                    if (mPtr != 0 && mBarrierToken) {
-                        nativeSendGetFeatureReportReply(mPtr, msg.arg1, (byte[]) msg.obj);
-                    } else {
-                        Log.e(TAG, "Tried to send feature report reply to closed device.");
-                    }
-                    break;
-                case MSG_CLOSE_DEVICE:
-                    if (mPtr != 0) {
-                        nativeCloseDevice(mPtr);
-                        getLooper().quitSafely();
-                        mPtr = 0;
-                    } else {
-                        Log.e(TAG, "Tried to close already closed device.");
-                    }
-                    synchronized (mCond) {
-                        mCond.notify();
-                    }
-                    break;
-                default:
-                    throw new IllegalArgumentException("Unknown device message");
+            if (msg.what == MSG_OPEN_DEVICE) {
+                Bundle args = (Bundle) msg.obj;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+                    mPtr = nativeOpenDevice(args.getString("name"), args.getString("uniq"), args.getInt("id"), args.getInt("vid"), args.getInt("pid"),
+                            args.getInt("bus"), args.getByteArray("descriptor"), new DeviceCallback());
+                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    mPtr = nativeOpenDevice(args.getString("name"), args.getInt("id"), args.getInt("vid"), args.getInt("pid"),
+                            args.getInt("bus"), args.getByteArray("descriptor"), new DeviceCallback());
+                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+                    mPtr = nativeOpenDevice(args.getString("name"), args.getInt("id"), args.getInt("vid"), args.getInt("pid"),
+                            args.getByteArray("descriptor"), new DeviceCallback());
+                } else {
+                    mPtr = nativeOpenDevice(args.getString("name"), args.getInt("id"), args.getInt("vid"), args.getInt("pid"),
+                            args.getByteArray("descriptor"), getLooper().myQueue(), new DeviceCallback());
+                }
+                pauseEvents();
+            } else if (msg.what == MSG_SEND_REPORT) {
+                if (mPtr != 0 && mBarrierToken) {
+                    nativeSendReport(mPtr, (byte[]) msg.obj);
+                } else {
+                    Log.e(TAG, "Tried to send report to closed device.");
+                }
+            } else if (msg.what == MSG_SEND_GET_FEATURE_REPORT_REPLY) {
+                if (mPtr != 0 && mBarrierToken) {
+                    nativeSendGetFeatureReportReply(mPtr, msg.arg1, (byte[]) msg.obj);
+                } else {
+                    Log.e(TAG, "Tried to send feature report reply to closed device.");
+                }
+            } else if (msg.what == MSG_SEND_SET_REPORT_REPLY) {
+                if (mPtr != 0) {
+                    final boolean success = msg.arg2 == 1;
+                    nativeSendSetReportReply(mPtr, msg.arg1, success);
+                } else {
+                    Log.e(TAG, "Tried to send set report reply to closed device.");
+                }
+            } else if (msg.what == MSG_CLOSE_DEVICE) {
+                if (mPtr != 0) {
+                    nativeCloseDevice(mPtr);
+                    getLooper().quitSafely();
+                    mPtr = 0;
+                } else {
+                    Log.e(TAG, "Tried to close already closed device.");
+                }
+                synchronized (mCond) {
+                    mCond.notify();
+                }
+            } else {
+                throw new IllegalArgumentException("Unknown device message");
             }
         }
 
@@ -255,6 +274,15 @@ public class Device {
             // We don't need to reply for the SET_REPORT but just send it to HID output for test
             // verification.
             sendReportOutput(UHID_EVENT_TYPE_SET_REPORT, rtype, data);
+        }
+
+        // native callback
+        public void onDeviceSetReport(int id, byte rType, byte[] data) {
+            // Used by sendSetReportReply()
+            mResponseId = id;
+            // We don't need to reply for the SET_REPORT but just send it to HID output for test
+            // verification.
+            sendReportOutput(UHID_EVENT_TYPE_SET_REPORT, rType, data);
         }
 
         // native callback
