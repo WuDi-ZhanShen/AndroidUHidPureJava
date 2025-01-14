@@ -24,6 +24,15 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+
+        TextView textView = new TextView(this);
+        textView.setText("Uhid simulation command has been copied. Run it by adb or root.");
+        textView.setTextColor(Color.WHITE);
+        textView.setGravity(Gravity.CENTER);
+        textView.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        setContentView(textView);
+
+        
         File outputDir = getExternalFilesDir(null);
         boolean success = extractDexFile(outputDir);
         if (success) {
