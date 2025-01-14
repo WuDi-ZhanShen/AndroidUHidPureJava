@@ -4,7 +4,12 @@ import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.view.Gravity;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.commands.hid.Hid;
@@ -32,11 +37,10 @@ public class MainActivity extends Activity {
         textView.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         setContentView(textView);
 
-        
+
         File outputDir = getExternalFilesDir(null);
         boolean success = extractDexFile(outputDir);
         if (success) {
-
             ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
             String cmd = "export CLASSPATH=" + outputDir.getAbsolutePath() + "/classes.dex;app_process /system/bin " + Hid.class.getName();
             // 创建剪切板内容
@@ -44,7 +48,7 @@ public class MainActivity extends Activity {
 
             // 将内容设置到剪切板
             clipboard.setPrimaryClip(clip);
-            Toast.makeText(this, "命令已复制到剪切板:\n"+cmd, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "command copied to clipboard:\n"+cmd, Toast.LENGTH_SHORT).show();
         }
     }
 
