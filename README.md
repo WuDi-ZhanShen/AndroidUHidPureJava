@@ -8,7 +8,7 @@ Starting from Android 6.0.1, the "hidcommand_jni" library is built into the syst
 
 # How to use
 
-Once you open the app, it will automaticly unzip the classes.dex from its apk file to /sdcard/Android/data/uhid/purejava/files/classes.dex. Then you can use this command to launch uhid simulation:
+Once you open the app, it will automaticly unzip the classes.dex from its apk file to /sdcard/Android/data/uhid.purejava/files/classes.dex. Then you can use this command to launch uhid simulation:
 
 export CLASSPATH=/sdcard/Android/data/uhid/purejava/files/classes.dex;app_process / com.android.commands.hid.Hid
 
