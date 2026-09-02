@@ -1,21 +1,20 @@
 # AndroidUHidPureJava
 
-A HID device simulation implemented purely in Java! 
+A HID device simulation implemented purely in Java! Support MultiTouchScreen Simulation!
 
 # How it works
 
-Starting from Android 6.0.1, the "hidcommand_jni" library is built into the system. We can load this library and use the JNI functions provided in it.
+By writing uhid events to /dev/uhid.
 
 # How to use
 
-Once you open the app, it will automaticly unzip the classes.dex from its apk file to /sdcard/Android/data/uhid.purejava/files/classes.dex. Then you can use this command to launch uhid simulation:
+Once you open the app, it will automaticly copy the uhid simulation launch command like this:
 
-export CLASSPATH=/sdcard/Android/data/uhid/purejava/files/classes.dex;app_process / com.android.commands.hid.Hid
+CLASSPATH=/data/XX/base.apk app_process / uhid.purejava.Hid
 
 Note: Adb or Root permission is required.
 
-Note: you can also manually unzip classes.dex from apk file. Just remember to change the filePath parameter in the launch command.
 
 # Support range
 
-Android 6.0.1 ~ Android 15
+Android 6.0.1 ~ Android 17
