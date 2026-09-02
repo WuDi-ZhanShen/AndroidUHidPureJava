@@ -1,10 +1,8 @@
 # AndroidUHidPureJava
-纯Java实现的uhid模拟HID设备！
+纯Java实现的uhid模拟HID设备！支持模拟多点触控！
 
 # How it works
-安卓6.0.1起，系统内置了hidcommand_jni库。加载这个库并使用库中的JNI函数即可。
+给/dev/uhid写入uhid事件。
 
 # How to to use
-打开APP时会自动解压classes.dex至/sdcard/Android/data/uhid.purejava/files/classes.dex。用此命令即可启动uhid模拟：
-
-export CLASSPATH=/sdcard/Android/data/uhid.purejava/files/classes.dex;app_process / com.android.commands.hid.Hid
+打开APP时会自动复制命令，在shell或root权限的终端里直接执行即可。
